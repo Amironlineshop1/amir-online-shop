@@ -104,6 +104,25 @@ hr{border:0;border-top:1px solid #444;margin:22px 0}
 
 <section class="container hidden" id="adminSection">
   <h2>پنل مدیریت امیر آنلاین شاپ</h2>
+ <div class="panel">
+  <h3>تنظیمات کارت بانکی فروشگاه</h3>
+
+  <label>نام بانک</label>
+  <input id="bankName" placeholder="مثلاً بانک ملت">
+
+  <label>شماره کارت ۱۶ رقمی</label>
+  <input id="cardNumber" inputmode="numeric" maxlength="19"
+         placeholder="6037-xxxx-xxxx-xxxx">
+
+  <label>نام صاحب کارت</label>
+  <input id="cardOwner" placeholder="نام و نام خانوادگی">
+
+  <button class="gold" onclick="saveBankSettings()">
+    ذخیره اطلاعات کارت
+  </button>
+
+  <p id="bankMessage" class="small"></p>
+ </div>
 
   <div class="panel">
     <div class="row-actions">

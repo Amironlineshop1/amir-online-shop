@@ -440,10 +440,26 @@ async function submitOrder() {
     return;
   }
 
-  const items = Object.entries(cart).map(([id,qty]) => ({
-    id:Number(id),
-    qty:Number(qty)
-  }));
+    const items = [];
+
+  for (const [id, qty] of Object.entries(cart)) {
+    const product = products.find(p => Number(p.id) === Number(id));
+    const quantity = Number(qty);
+
+    if (!product || !Number.isInteger(quantity) || quantity < 1) {
+      continue;
+    }
+
+    items.push({
+      id: Number(product.id),
+      qty: quantity
+    });
+  }
+
+  if (!items.length) {
+    message.textContent = "سبد خرید معتبر نیست. لطفاً محصول را حذف کن و دوباره به سبد خرید اضافه کن.";
+    return;
+  }
 
   if(!items.length) {
     message.textContent = "سبد خرید خالی است.";

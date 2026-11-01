@@ -870,7 +870,7 @@ async function saveBankSettings() {
   const message = document.getElementById("bankMessage");
 
   if (!bank || !owner || !/^\d{16}$/.test(card)) {
-    message.textContent = "نام بانک، نام صاحب کارت و شماره کارت ۱۶ رقمی را درست وارد کن.";
+    message.textContent = "اطلاعات کارت را درست وارد کن.";
     return;
   }
 

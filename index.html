@@ -521,8 +521,8 @@ function previewProductImage(){
 async function saveProduct(){
   if(!isAdmin)return;
 
-  const id=el("editProductId").value;
-  const name=el("pName").value.trim();
+  const id=el("editProductId") }
+  async function deleteProduct(id){
   const category=el("pCategory").value;
   const price=Number(el("pPrice").value);
   const stock=Number(el("pStock").value);

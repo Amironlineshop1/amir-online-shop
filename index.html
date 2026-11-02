@@ -498,9 +498,107 @@ el("productForm").scrollIntoView({behavior:"smooth"});
 
 function hideProductForm(){el("productForm").classList.add("hidden");}
 
+function previewProductImage(){
+  const file = el("pImageFile").files[0];
+  const preview = el("pImagePreview");
+
+  if(!file){
+    preview.src = "";
+    preview.classList.add("hidden");
+    return;
+  }
+
+  if(!file.type.startsWith("image/")){
+    alert("لطفاً یک فایل تصویری انتخاب کن.");
+    el("pImageFile").value = "";
+    return;
+  }
+
+  preview.src = URL.createObjectURL(file);
+  preview.classList.remove("hidden");
+}
+
 async function saveProduct(){
-if(!isAdmin)return;
-const id=el("editProductId").value;
+  if(!isAdmin)return;
+
+  const id=el("editProductId").value;
+  const name=el("pName").value.trim();
+  const category=el("pCategory").value;
+  const price=Number(el("pPrice").value);
+  const stock=Number(el("pStock").value);
+  let image=el("pImage").value.trim();
+  const description=el("pDescription").value.trim();
+  const is_active=el("pActive").checked;
+
+  const file=el("pImageFile").files[0];
+
+  if(!name||!Number.isInteger(price)||price<=0||!Number.isInteger(stock)||stock<0){
+    alert("نام، قیمت معتبر و موجودی معتبر را وارد کن.");
+    return;
+  }
+
+  if(file){
+    if(!file.type.startsWith("image/")){
+      alert("فایل انتخابی باید تصویر باشد.");
+      return;
+    }
+
+    if(file.size>5*1024*1024){
+      alert("حجم عکس نباید بیشتر از ۵ مگابایت باشد.");
+      return;
+    }
+
+    const extension=file.name.split(".").pop().toLowerCase();
+    const fileName=Date.now()+"-"+Math.random().toString(36).slice(2)+"."+extension;
+
+    const {data:uploadData,error:uploadError}=await db.storage
+      .from("product-images")
+      .upload(fileName,file,{
+        contentType:file.type,
+        upsert:false
+      });
+
+    if(uploadError){
+      alert("آپلود عکس ناموفق بود: "+uploadError.message);
+      return;
+    }
+
+    const {data:urlData}=db.storage
+      .from("product-images")
+      .getPublicUrl(uploadData.path);
+
+    image=urlData.publicUrl;
+  }
+
+  if(image&&!/^https?:\/\//i.test(image)){
+    alert("آدرس تصویر معتبر نیست.");
+    return;
+  }
+
+  const record={
+    name,
+    category,
+    price,
+    stock,
+    image,
+    description,
+    is_active
+  };
+
+  const result=id
+    ?await db.from("products").update(record).eq("id",id)
+    :await db.from("products").insert(record);
+
+  if(result.error){
+    alert("ذخیره محصول انجام نشد: "+result.error.message);
+    return;
+  }
+
+  alert("محصول با موفقیت ذخیره شد.");
+  hideProductForm();
+  await loadAdminData();
+  await loadProducts();
+}.value;
 const name=el("pName").value.trim();
 const category=el("pCategory").value;
 const price=Number(el("pPrice").value);

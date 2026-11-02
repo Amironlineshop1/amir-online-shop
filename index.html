@@ -190,8 +190,20 @@ footer{text-align:center;padding:24px;color:#999;border-top:1px solid #333;margi
 <div><label>قیمت به تومان</label><input id="pPrice" type="number" min="1"></div>
 <div><label>تعداد موجودی</label><input id="pStock" type="number" min="0"></div>
 </div>
-<label>لینک تصویر محصول</label>
-<input id="pImage" placeholder="https://example.com/image.jpg">
+<label>انتخاب عکس محصول از گالری گوشی</label>
+<input
+  id="pImageFile"
+  type="file"
+  accept="image/*"
+  onchange="previewProductImage()"
+>
+<img
+  id="pImagePreview"
+  class="hidden"
+  style="width:150px;height:150px;object-fit:cover;border-radius:10px;margin:10px 0;"
+  alt="پیش‌نمایش عکس محصول"
+>
+<input id="pImage" type="hidden">
 <label>توضیحات محصول</label>
 <textarea id="pDescription" rows="3"></textarea>
 <label><input type="checkbox" id="pActive" checked style="width:auto"> نمایش محصول در فروشگاه</label>

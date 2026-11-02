@@ -2,513 +2,830 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>امیر آنلاین شاپ</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-:root{--gold:#d6ad55;--bg:#101010;--panel:#1d1d1d}
+:root {
+  --gold:#d6ad55;
+  --bg:#101010;
+  --panel:#1d1d1d;
+}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:#fff;font-family:Tahoma,Arial,sans-serif}
+body{
+  margin:0;background:var(--bg);color:#fff;
+  font-family:Tahoma,Arial,sans-serif
+}
 button,input,textarea,select{font:inherit}
-button{border:0;border-radius:8px;padding:11px 15px;cursor:pointer}
-button:disabled{opacity:.45;cursor:not-allowed}
+button{
+  border:0;border-radius:8px;padding:11px 15px;
+  cursor:pointer
+}
+button:disabled{opacity:.4}
 .gold{background:var(--gold);color:#111;font-weight:bold}
 .dark{background:#333;color:#fff}
 .red{background:#8d2929;color:#fff}
-header{background:#080808;border-bottom:1px solid #80652f;padding:15px 5%;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.logo{font-size:22px;color:var(--gold);font-weight:bold}
-nav,.toolbar,.categories,.row-actions{display:flex;gap:8px;flex-wrap:wrap}
-nav button,.categories button{background:#292929;color:#fff}
+header{
+  background:#080808;border-bottom:1px solid #80652f;
+  padding:15px;display:flex;justify-content:space-between;
+  align-items:center;gap:12px;flex-wrap:wrap
+}
+.logo{text-align:center;color:var(--gold);font-size:23px;font-weight:bold}
+.aos-logo{
+  direction:ltr;display:flex;justify-content:center;
+  align-items:center;gap:8px;width:100px;height:70px;
+  border:2px solid var(--gold);border-radius:16px 4px;
+  color:var(--gold);font:bold 30px Georgia;
+  margin:0 auto 10px
+}
+nav,.toolbar,.categories,.row-actions{
+  display:flex;gap:8px;flex-wrap:wrap
+}
+nav button,.categories button{background:#292929;color:white}
 .categories button.active{background:var(--gold);color:#111}
-.hero{text-align:center;padding:55px 15px;background:linear-gradient(130deg,#302718,#080808)}
-.hero h1{font-size:30px;color:var(--gold)}
+.hero{
+  text-align:center;padding:55px 15px;
+  background:linear-gradient(130deg,#302718,#080808)
+}
+.hero h1{color:var(--gold);font-size:29px}
 .hero p{color:#ccc;line-height:2}
 .container{max-width:1150px;margin:auto;padding:24px 16px}
 h2,h3{color:var(--gold)}
-input,textarea,select{width:100%;background:#292929;color:#fff;border:1px solid #555;border-radius:8px;padding:12px;margin:6px 0 13px;font-size:14px}
+input,textarea,select{
+  width:100%;background:#292929;color:#fff;
+  border:1px solid #555;border-radius:8px;
+  padding:12px;margin:6px 0 13px;font-size:14px
+}
 input:focus,textarea:focus,select:focus{outline:1px solid var(--gold)}
 .toolbar input{max-width:320px}
-.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:17px}
-.card{background:var(--panel);border:1px solid #38332a;border-radius:13px;overflow:hidden}
-.card img{width:100%;height:190px;object-fit:cover;background:#292929}
+.products{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+  gap:17px
+}
+.card{
+  background:var(--panel);border:1px solid #38332a;
+  border-radius:13px;overflow:hidden
+}
+.card img{
+  width:100%;height:190px;object-fit:cover;
+  background:#292929
+}
 .card-content{padding:14px}
 .card h3{margin:5px 0 10px;color:#fff}
 .price{color:var(--gold);font-weight:bold;margin:10px 0}
 .stock,.small{font-size:12px;color:#aaa;line-height:1.9}
 .card button{width:100%;margin-top:10px}
-.panel{background:var(--panel);padding:17px;border-radius:12px;margin:15px 0;border:1px solid #39332a}
+.panel{
+  background:var(--panel);padding:17px;
+  border-radius:12px;margin:15px 0;border:1px solid #39332a
+}
 .hidden{display:none!important}
-.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.form-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:10px
+}
 .table-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;min-width:620px}
-th,td{padding:11px;border-bottom:1px solid #444;text-align:right;font-size:13px}
+th,td{
+  padding:11px;border-bottom:1px solid #444;
+  text-align:right;font-size:13px
+}
 th{color:var(--gold)}
-.order-card{background:#252525;padding:14px;border-radius:10px;margin:12px 0}
+.order-card{
+  background:#252525;padding:14px;
+  border-radius:10px;margin:12px 0
+}
 .order-card p{line-height:2;color:#ddd}
-.empty{text-align:center;padding:25px;color:#bbb;background:#1b1b1b;border-radius:12px;line-height:2}
-.notice{background:#352d1b;border:1px solid #80652f;padding:12px;border-radius:8px;color:#f1d99d;line-height:1.9;margin:12px 0}
-footer{text-align:center;padding:24px;color:#999;border-top:1px solid #333;margin-top:35px}
-.overlay{position:fixed;inset:0;background:#000c;z-index:10;display:flex;align-items:center;justify-content:center;padding:14px}
-.modal{background:#1b1b1b;border:1px solid var(--gold);border-radius:14px;padding:19px;width:100%;max-width:520px;max-height:90vh;overflow:auto}
+.empty{
+  text-align:center;padding:25px;color:#bbb;
+  background:#1b1b1b;border-radius:12px;line-height:2
+}
+.notice{
+  background:#352d1b;border:1px solid #80652f;
+  padding:12px;border-radius:8px;color:#f1d99d;
+  line-height:1.9;margin:12px 0
+}
+footer{
+  text-align:center;padding:24px;color:#999;
+  border-top:1px solid #333;margin-top:35px
+}
+.overlay{
+  position:fixed;inset:0;background:#000c;z-index:10;
+  display:flex;align-items:center;justify-content:center;
+  padding:14px
+}
+.modal{
+  background:#1b1b1b;border:1px solid var(--gold);
+  border-radius:14px;padding:19px;width:100%;
+  max-width:520px;max-height:90vh;overflow:auto
+}
 .modal h2{margin-top:0}
-.bank-value{font-weight:bold;color:var(--gold);direction:ltr;display:inline-block}
-@media(max-width:600px){.hero h1{font-size:24px}header{padding:13px}.logo{font-size:19px}}
+.bank-value{
+  font-weight:bold;color:var(--gold);
+  direction:ltr;display:inline-block
+}
+.preview{
+  width:150px;height:150px;object-fit:cover;
+  border-radius:10px;border:1px solid var(--gold);
+  margin:10px 0
+}
+@media(max-width:600px){
+  .hero h1{font-size:23px}
+  header{justify-content:center}
+  .logo{font-size:19px}
+  nav{justify-content:center}
+}
 </style>
 </head>
+
 <body>
 
 <header>
-  <div class="aos-brand">
-  <div class="aos-logo" dir="ltr" style="
-  direction:ltr;
-  display:flex;
-  flex-direction:row;
-  justify-content:center;
-  align-items:center;
-  gap:12px;
-  width:110px;
-  height:75px;
-  margin:auto;
-">
-  <span>A</span>
-  <span>O</span>
-  <span>S</span>
+  <div class="logo">
+    <div class="aos-logo">
+      <span>A</span><span>O</span><span>S</span>
+    </div>
+    امیر آنلاین شاپ
+    <div class="small">LUXURY • STYLE • SHOPPING</div>
   </div>
-    
-  <div class="aos-brand-name">امیر آنلاین شاپ</div>
-  <div class="aos-brand-line"></div>
-  <div class="aos-brand-sub">LUXURY • STYLE • SHOPPING</div>
-</div>
 
-<style>
-.aos-brand {
-  text-align: center;
-  padding: 22px 10px;
-  direction: rtl;
-}
-.aos-logo {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  gap: 5px;
-  width: 100px;
-  height: 75px;
-  border: 2px solid #d4af37;
-  border-radius: 18px 4px 18px 4px;
-  color: #e3bd55;
-  font-family: Georgia,serif;
-  font-size: 31px;
-  font-weight: bold;
-  box-shadow: 0 0 18px #d4af3740;
-  transform: skew(-4deg);
-}
-.aos-brand-name {
-  color: #e3bd55;
-  font-size: 23px;
-  font-weight: 900;
-  margin-top: 12px;
-}
-.aos-brand-line {
-  width: 95px;
-  height: 2px;
-  background: #d4af37;
-  margin: 10px auto;
-}
-.aos-brand-sub {
-  color: #aaa;
-  font-size: 9px;
-  letter-spacing: 3px;
-  direction: ltr;
-}
-</style>
-<div class="logo">✦ امیر آنلاین شاپ</div>
-<nav>
-<button onclick="goHome()">صفحه اصلی</button>
-<button onclick="openCart()">سبد خرید 🛒 <span id="cartCount">۰</span></button>
-<button onclick="showLogin()">مدیریت</button>
-</nav>
+  <nav>
+    <button onclick="goHome()">صفحه اصلی</button>
+    <button onclick="openCart()">سبد خرید 🛒 <span id="cartCount">۰</span></button>
+    <button onclick="showLogin()">مدیریت</button>
+  </nav>
 </header>
 
 <section class="hero" id="home">
-<h1>به امیر آنلاین شاپ خوش آمدید</h1>
-<p>خرید آسان، مطمئن و سریع با امیر آنلاین شاپ</p>
-<button class="gold" onclick="document.getElementById('shop').scrollIntoView({behavior:'smooth'})">مشاهده محصولات</button>
+  <h1>به امیر آنلاین شاپ خوش آمدید</h1>
+  <p>خرید آسان، مطمئن و سریع با امیر آنلاین شاپ</p>
+  <button class="gold" onclick="el('shop').scrollIntoView({behavior:'smooth'})">
+    مشاهده محصولات
+  </button>
 </section>
 
 <main class="container" id="shop">
-<h2>محصولات فروشگاه</h2>
-<div class="toolbar">
-<input id="searchInput" placeholder="جستجوی محصول..." oninput="renderProducts()">
-</div>
-<div class="categories">
-<button class="active" onclick="filterCategory('همه',this)">همه محصولات</button>
-<button onclick="filterCategory('پوشاک',this)">پوشاک</button>
-<button onclick="filterCategory('دیجیتال',this)">دیجیتال</button>
-<button onclick="filterCategory('اکسسوری',this)">اکسسوری</button>
-<button onclick="filterCategory('خانه',this)">خانه و زندگی</button>
-</div>
-<div id="products" class="products"><div class="empty">در حال دریافت محصولات...</div></div>
+  <h2>محصولات فروشگاه</h2>
+
+  <div class="toolbar">
+    <input id="searchInput" placeholder="جستجوی محصول..." oninput="renderProducts()">
+  </div>
+
+  <div class="categories">
+    <button class="active" onclick="filterCategory('همه',this)">همه محصولات</button>
+    <button onclick="filterCategory('پوشاک',this)">پوشاک</button>
+    <button onclick="filterCategory('دیجیتال',this)">دیجیتال</button>
+    <button onclick="filterCategory('اکسسوری',this)">اکسسوری</button>
+    <button onclick="filterCategory('خانه',this)">خانه و زندگی</button>
+  </div>
+
+  <div id="products" class="products">
+    <div class="empty">در حال دریافت محصولات...</div>
+  </div>
 </main>
 
+<!-- پنل مدیریت -->
 <section class="container hidden" id="adminSection">
-<h2>پنل مدیریت امیر آنلاین شاپ</h2>
+  <h2>پنل مدیریت امیر آنلاین شاپ</h2>
 
-<div class="panel">
-<h3>تنظیمات کارت بانکی فروشگاه</h3>
-<label>نام بانک</label>
-<input id="bankName" placeholder="مثلاً بانک ملت">
-<label>شماره کارت ۱۶ رقمی</label>
-<input id="cardNumber" inputmode="numeric" maxlength="19" placeholder="6037-xxxx-xxxx-xxxx">
-<label>نام صاحب کارت</label>
-<input id="cardOwner" placeholder="نام و نام خانوادگی">
-<button class="gold" onclick="saveBankSettings()">ذخیره اطلاعات کارت</button>
-<p id="bankMessage" class="small"></p>
-</div>
+  <div class="panel">
+    <h3>تنظیمات کارت بانکی فروشگاه</h3>
+    <label>نام بانک</label>
+    <input id="bankName" placeholder="مثلاً بانک ملت">
 
-<div class="panel">
-<div class="row-actions">
-<button class="gold" onclick="showProductForm()">افزودن محصول جدید +</button>
-<button class="dark" onclick="loadAdminData()">به‌روزرسانی اطلاعات</button>
-<button class="red" onclick="logoutAdmin()">خروج از مدیریت</button>
-</div>
-<p class="small">مدیریت محصولات، قیمت‌ها، موجودی و سفارش‌ها</p>
-</div>
+    <label>شماره کارت ۱۶ رقمی</label>
+    <input id="cardNumber" inputmode="numeric" maxlength="19">
 
-<div class="panel hidden" id="productForm">
-<h3 id="productFormTitle">افزودن محصول</h3>
-<input type="hidden" id="editProductId">
-<div class="form-grid">
-<div><label>نام محصول</label><input id="pName" placeholder="مثلاً کفش اسپرت"></div>
-<div><label>دسته‌بندی</label>
-<select id="pCategory">
-<option value="پوشاک">پوشاک</option>
-<option value="دیجیتال">دیجیتال</option>
-<option value="اکسسوری">اکسسوری</option>
-<option value="خانه">خانه و زندگی</option>
-</select>
-</div>
-<div><label>قیمت به تومان</label><input id="pPrice" type="number" min="1"></div>
-<div><label>تعداد موجودی</label><input id="pStock" type="number" min="0"></div>
-</div>
-<label>انتخاب عکس محصول از گالری گوشی</label>
-<input
-  id="pImageFile"
-  type="file"
-  accept="image/*"
-  onchange="previewProductImage()"
->
-<img
-  id="pImagePreview"
-  class="hidden"
-  style="width:150px;height:150px;object-fit:cover;border-radius:10px;margin:10px 0;"
-  alt="پیش‌نمایش عکس محصول"
->
-<input id="pImage" type="hidden">
-<label>توضیحات محصول</label>
-<textarea id="pDescription" rows="3"></textarea>
-<label><input type="checkbox" id="pActive" checked style="width:auto"> نمایش محصول در فروشگاه</label>
-<div class="row-actions">
-<button class="gold" onclick="saveProduct()">ذخیره محصول</button>
-<button class="dark" onclick="hideProductForm()">انصراف</button>
-</div>
-</div>
+    <label>نام صاحب کارت</label>
+    <input id="cardOwner" placeholder="نام و نام خانوادگی">
 
-<div class="panel">
-<h3>مدیریت محصولات</h3>
-<div class="table-wrap">
-<table>
-<thead><tr><th>نام</th><th>قیمت</th><th>موجودی</th><th>وضعیت</th><th>عملیات</th></tr></thead>
-<tbody id="adminProducts"></tbody>
-</table>
-</div>
-</div>
+    <button class="gold" onclick="saveBankSettings()">ذخیره اطلاعات کارت</button>
+    <p id="bankMessage" class="small"></p>
+  </div>
 
-<div class="panel">
-<h3>سفارش‌های مشتریان</h3>
-<div class="notice">با ثبت سفارش، موجودی محصولات کم می‌شود؛ حتی اگر پرداخت هنوز تأیید نشده باشد. در صورت لغو سفارش، موجودی را دستی اصلاح کن.</div>
-<div id="adminOrders">در حال دریافت سفارش‌ها...</div>
-</div>
+  <div class="panel">
+    <div class="row-actions">
+      <button class="gold" onclick="showProductForm()">افزودن محصول جدید +</button>
+      <button class="dark" onclick="loadAdminData()">به‌روزرسانی اطلاعات</button>
+      <button class="red" onclick="logoutAdmin()">خروج از مدیریت</button>
+    </div>
+    <p class="small">مدیریت محصولات، قیمت‌ها، موجودی و سفارش‌ها</p>
+  </div>
+
+  <div class="panel hidden" id="productForm">
+    <h3 id="productFormTitle">افزودن محصول</h3>
+
+    <input type="hidden" id="editProductId">
+
+    <div class="form-grid">
+      <div>
+        <label>نام محصول</label>
+        <input id="pName" placeholder="مثلاً کفش اسپرت">
+      </div>
+
+      <div>
+        <label>دسته‌بندی</label>
+        <select id="pCategory">
+          <option value="پوشاک">پوشاک</option>
+          <option value="دیجیتال">دیجیتال</option>
+          <option value="اکسسوری">اکسسوری</option>
+          <option value="خانه">خانه و زندگی</option>
+        </select>
+      </div>
+
+      <div>
+        <label>قیمت به تومان</label>
+        <input id="pPrice" type="number" min="1">
+      </div>
+
+      <div>
+        <label>تعداد موجودی</label>
+        <input id="pStock" type="number" min="0">
+      </div>
+    </div>
+
+    <label>انتخاب عکس محصول از گالری گوشی</label>
+    <input id="pImageFile" type="file" accept="image/*" onchange="previewProductImage()">
+
+    <img id="pImagePreview" class="preview hidden" alt="پیش‌نمایش عکس محصول">
+    <input id="pImage" type="hidden">
+
+    <label>توضیحات محصول</label>
+    <textarea id="pDescription" rows="3"></textarea>
+
+    <label>
+      <input type="checkbox" id="pActive" checked style="width:auto">
+      نمایش محصول در فروشگاه
+    </label>
+
+    <div class="row-actions">
+      <button class="gold" onclick="saveProduct()">ذخیره محصول</button>
+      <button class="dark" onclick="hideProductForm()">انصراف</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>مدیریت محصولات</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>نام</th><th>قیمت</th><th>موجودی</th>
+            <th>وضعیت</th><th>عملیات</th>
+          </tr>
+        </thead>
+        <tbody id="adminProducts"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>سفارش‌های مشتریان</h3>
+    <div class="notice">
+      با ثبت سفارش، موجودی محصولات کم می‌شود؛ حتی اگر پرداخت هنوز تأیید نشده باشد.
+      در صورت لغو سفارش، موجودی را دستی اصلاح کن.
+    </div>
+    <div id="adminOrders">در حال دریافت سفارش‌ها...</div>
+  </div>
 </section>
 
+<!-- ورود مدیر -->
 <div class="overlay hidden" id="loginOverlay">
-<div class="modal">
-<h2>ورود مدیر فروشگاه</h2>
-<p class="small">فقط مدیر فروشگاه اجازه ورود دارد.</p>
-<label>ایمیل مدیر</label>
-<input id="adminEmail" type="email" placeholder="ایمیل">
-<label>رمز عبور</label>
-<input id="adminPassword" type="password" placeholder="رمز عبور">
-<div class="row-actions">
-<button class="gold" onclick="loginAdmin()">ورود به پنل</button>
-<button class="dark" onclick="hideLogin()">بستن</button>
-</div>
-<p id="loginMessage" class="small"></p>
-</div>
+  <div class="modal">
+    <h2>ورود مدیر فروشگاه</h2>
+    <p class="small">فقط مدیر فروشگاه اجازه ورود دارد.</p>
+
+    <label>ایمیل مدیر</label>
+    <input id="adminEmail" type="email" placeholder="ایمیل">
+
+    <label>رمز عبور</label>
+    <input id="adminPassword" type="password" placeholder="رمز عبور">
+
+    <div class="row-actions">
+      <button class="gold" onclick="loginAdmin()">ورود به پنل</button>
+      <button class="dark" onclick="hideLogin()">بستن</button>
+    </div>
+    <p id="loginMessage" class="small"></p>
+  </div>
 </div>
 
+<!-- سبد خرید -->
 <div class="overlay hidden" id="cartOverlay">
-<div class="modal">
-<h2>سبد خرید من</h2>
-<div id="cartItems"></div>
-<hr>
-<h3 id="cartTotal">مبلغ کل: ۰ تومان</h3>
-<div class="row-actions">
-<button class="gold" onclick="openCheckout()">ثبت سفارش</button>
-<button class="dark" onclick="closeCart()">ادامه خرید</button>
-</div>
-</div>
+  <div class="modal">
+    <h2>سبد خرید من</h2>
+    <div id="cartItems"></div>
+    <hr>
+    <h3 id="cartTotal">مبلغ کل: ۰ تومان</h3>
+
+    <div class="row-actions">
+      <button class="gold" onclick="openCheckout()">ثبت سفارش</button>
+      <button class="dark" onclick="closeCart()">ادامه خرید</button>
+    </div>
+  </div>
 </div>
 
+<!-- ثبت سفارش -->
 <div class="overlay hidden" id="checkoutOverlay">
-<div class="modal">
-<h2>اطلاعات ثبت سفارش</h2>
-<label>نام و نام خانوادگی</label>
-<input id="customerName" placeholder="نام شما">
-<label>شماره موبایل</label>
-<input id="customerPhone" type="tel" placeholder="09xxxxxxxxx">
-<label>آدرس کامل</label>
-<textarea id="customerAddress" rows="3" placeholder="استان، شهر، خیابان، پلاک و..."></textarea>
-<div class="notice" id="checkoutBank">روش پرداخت فعلی: کارت به کارت.</div>
-<div class="row-actions">
-<button class="gold" onclick="submitOrder()">ثبت نهایی سفارش</button>
-<button class="dark" onclick="closeCheckout()">بازگشت</button>
-</div>
-<p id="checkoutMessage" class="small"></p>
-</div>
+  <div class="modal">
+    <h2>اطلاعات ثبت سفارش</h2>
+
+    <label>نام و نام خانوادگی</label>
+    <input id="customerName" placeholder="نام شما">
+
+    <label>شماره موبایل</label>
+    <input id="customerPhone" type="tel" placeholder="09xxxxxxxxx">
+
+    <label>آدرس کامل</label>
+    <textarea id="customerAddress" rows="3" placeholder="استان، شهر، خیابان، پلاک و..."></textarea>
+
+    <div class="notice" id="checkoutBank">روش پرداخت فعلی: کارت به کارت.</div>
+
+    <div class="row-actions">
+      <button class="gold" onclick="submitOrder()">ثبت نهایی سفارش</button>
+      <button class="dark" onclick="closeCheckout()">بازگشت</button>
+    </div>
+
+    <p id="checkoutMessage" class="small"></p>
+  </div>
 </div>
 
-<footer><p>امیر آنلاین شاپ | خریدی متفاوت با انتخابی مطمئن</p></footer>
+<footer>
+  <p>امیر آنلاین شاپ | خریدی متفاوت با انتخابی مطمئن</p>
+</footer>
+
+<!-- ارتباط با ما -->
+<section style="background:#111;color:#fff;padding:30px 15px;text-align:center;border-top:2px solid #d4af37;direction:rtl;">
+  <h2 style="color:#d4af37;">ارتباط با امیر آنلاین شاپ</h2>
+  <p>برای ثبت سفارش و دریافت راهنمایی با ما در ارتباط باشید.</p>
+
+  <a href="tel:09118479380" style="display:inline-block;background:#d4af37;color:#111;padding:12px 25px;margin:8px;border-radius:8px;text-decoration:none;font-weight:bold;">
+    تماس با ما
+  </a>
+
+  <a href="https://t.me/Usertelegram_es" target="_blank" style="display:inline-block;background:#d4af37;color:#111;padding:12px 25px;margin:8px;border-radius:8px;text-decoration:none;font-weight:bold;">
+    ارتباط در تلگرام
+  </a>
+
+  <p style="margin-top:20px;font-size:13px;color:#bbb;">
+    © امیر آنلاین شاپ | تمامی حقوق محفوظ است
+  </p>
+</section>
 
 <script>
+/* اتصال به Supabase */
 const SUPABASE_URL = "https://tiwwrgxkjptvptdrkvsf.supabase.co";
 const SUPABASE_KEY = "sb_publishable_YQTYk12RfGzI9qrGBqUayw_yMCuGrLa";
-const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-let products=[];
-let cart={};
-let currentCategory="همه";
-let isAdmin=false;
-let bankSettings=null;
+let db = null;
+let products = [];
+let cart = {};
+let currentCategory = "همه";
+let isAdmin = false;
+let bankSettings = null;
 
-try{cart=JSON.parse(localStorage.getItem("amirCart")||"{}");}catch(e){cart={};}
-
-function el(id){return document.getElementById(id);}
-function escapeHTML(value){
-return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-}
-function money(value){return Number(value||0).toLocaleString("fa-IR")+" تومان";}
-function saveCart(){localStorage.setItem("amirCart",JSON.stringify(cart));updateCartCount();}
-function updateCartCount(){
-const count=Object.values(cart).reduce((a,b)=>a+Number(b),0);
-el("cartCount").textContent=count.toLocaleString("fa-IR");
+function el(id) {
+  return document.getElementById(id);
 }
 
-async function loadProducts(){
-const {data,error}=await db.from("products").select("*").eq("is_active",true).order("created_at",{ascending:false});
-if(error){el("products").innerHTML='<div class="empty">خطا در دریافت محصولات. اتصال اینترنت و دیتابیس را بررسی کن.</div>';console.error(error);return;}
-products=data||[];
-renderProducts();
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[c]));
 }
 
-function renderProducts(){
-const search=el("searchInput").value.trim().toLowerCase();
-const filtered=products.filter(p=>(currentCategory==="همه"||p.category===currentCategory)&&String(p.name).toLowerCase().includes(search));
-if(!filtered.length){el("products").innerHTML='<div class="empty">هنوز محصولی در این بخش ثبت نشده است.</div>';return;}
-el("products").innerHTML=filtered.map(p=>`
-<div class="card">
-<img src="${escapeHTML(p.image||"https://placehold.co/600x400/222222/d6ad55?text=Amir+Shop")}" alt="${escapeHTML(p.name)}" onerror="this.src='https://placehold.co/600x400/222222/d6ad55?text=Amir+Shop'">
-<div class="card-content">
-<h3>${escapeHTML(p.name)}</h3>
-<p class="small">${escapeHTML(p.description||"")}</p>
-<div class="price">${money(p.price)}</div>
-<div class="stock">${Number(p.stock)>0?"موجودی: "+Number(p.stock).toLocaleString("fa-IR"):"ناموجود"}</div>
-<button class="gold" onclick="addToCart(${Number(p.id)})" ${Number(p.stock)<=0?"disabled":""}>افزودن به سبد خرید</button>
-</div></div>`).join("");
+function money(value) {
+  return Number(value || 0).toLocaleString("fa-IR") + " تومان";
 }
 
-function filterCategory(category,button){
-currentCategory=category;
-document.querySelectorAll(".categories button").forEach(b=>b.classList.remove("active"));
-button.classList.add("active");
-renderProducts();
+try {
+  cart = JSON.parse(localStorage.getItem("amirCart") || "{}");
+} catch(e) {
+  cart = {};
 }
 
-function addToCart(id){
-const p=products.find(x=>Number(x.id)===Number(id));
-if(!p)return;
-const qty=Number(cart[id]||0);
-if(qty>=Number(p.stock)){alert("تعداد انتخابی بیشتر از موجودی فروشگاه است.");return;}
-cart[id]=qty+1;
-saveCart();
-alert("محصول به سبد خرید اضافه شد.");
+/* سبد خرید */
+function saveCart() {
+  localStorage.setItem("amirCart", JSON.stringify(cart));
+  updateCartCount();
 }
 
-function changeQty(id,change){
-const p=products.find(x=>Number(x.id)===Number(id));
-if(!p)return;
-const next=Number(cart[id]||0)+change;
-if(next<=0)delete cart[id];
-else if(next>Number(p.stock)){alert("موجودی کافی نیست.");return;}
-else cart[id]=next;
-saveCart();
-renderCart();
+function updateCartCount() {
+  const count = Object.values(cart).reduce((a,b) => a + Number(b), 0);
+  el("cartCount").textContent = count.toLocaleString("fa-IR");
 }
 
-function removeCartItem(id){delete cart[id];saveCart();renderCart();}
+/* دریافت محصولات */
+async function loadProducts() {
+  if (!db) {
+    el("products").innerHTML =
+      '<div class="empty">اتصال به سرویس فروشگاه برقرار نشد. صفحه را دوباره بارگذاری کن.</div>';
+    return;
+  }
 
-function cartTotal(){
-return Object.entries(cart).reduce((sum,[id,qty])=>{
-const p=products.find(x=>Number(x.id)===Number(id));
-return sum+(p?Number(p.price)*Number(qty):0);
-},0);
+  el("products").innerHTML =
+    '<div class="empty">در حال دریافت محصولات...</div>';
+
+  try {
+    const {data,error} = await db.from("products")
+      .select("*")
+      .eq("is_active",true)
+      .order("created_at",{ascending:false});
+
+    if (error) throw error;
+
+    products = data || [];
+    renderProducts();
+
+  } catch(error) {
+    console.error("خطای دریافت محصولات:",error);
+    el("products").innerHTML =
+      '<div class="empty">خطا در دریافت محصولات: ' +
+      escapeHTML(error.message) + '</div>';
+  }
 }
 
-function renderCart(){
-const entries=Object.entries(cart).filter(([id,qty])=>Number(qty)>0&&products.some(p=>Number(p.id)===Number(id)));
-if(!entries.length)el("cartItems").innerHTML='<div class="empty">سبد خرید شما خالی است.</div>';
-else el("cartItems").innerHTML=entries.map(([id,qty])=>{
-const p=products.find(x=>Number(x.id)===Number(id));
-return `<div class="order-card">
-<strong>${escapeHTML(p.name)}</strong>
-<p>${money(p.price)} × ${Number(qty).toLocaleString("fa-IR")}</p>
-<div class="row-actions">
-<button class="dark" onclick="changeQty(${Number(id)},-1)">−</button>
-<button class="dark">${Number(qty).toLocaleString("fa-IR")}</button>
-<button class="dark" onclick="changeQty(${Number(id)},1)">+</button>
-<button class="red" onclick="removeCartItem(${Number(id)})">حذف</button>
-</div></div>`;
-}).join("");
-el("cartTotal").textContent="مبلغ کل: "+money(cartTotal());
+function renderProducts() {
+  const search = el("searchInput").value.trim().toLowerCase();
+
+  const filtered = products.filter(p =>
+    (currentCategory === "همه" || p.category === currentCategory) &&
+    String(p.name).toLowerCase().includes(search)
+  );
+
+  if (!filtered.length) {
+    el("products").innerHTML =
+      '<div class="empty">هنوز محصولی در این بخش ثبت نشده است.</div>';
+    return;
+  }
+
+  el("products").innerHTML = filtered.map(p => `
+    <div class="card">
+      <img
+        src="${escapeHTML(p.image || "https://placehold.co/600x400/222222/d6ad55?text=Amir+Shop")}"
+        alt="${escapeHTML(p.name)}"
+        onerror="this.src='https://placehold.co/600x400/222222/d6ad55?text=Amir+Shop'"
+      >
+      <div class="card-content">
+        <h3>${escapeHTML(p.name)}</h3>
+        <p class="small">${escapeHTML(p.description || "")}</p>
+        <div class="price">${money(p.price)}</div>
+        <div class="stock">
+          ${Number(p.stock)>0
+            ? "موجودی: " + Number(p.stock).toLocaleString("fa-IR")
+            : "ناموجود"}
+        </div>
+        <button class="gold"
+          onclick="addToCart(${Number(p.id)})"
+          ${Number(p.stock)<=0 ? "disabled" : ""}>
+          افزودن به سبد خرید
+        </button>
+      </div>
+    </div>
+  `).join("");
 }
 
-function openCart(){renderCart();el("cartOverlay").classList.remove("hidden");}
-function closeCart(){el("cartOverlay").classList.add("hidden");}
-
-async function loadPublicBankSettings(){
-const {data,error}=await db.from("shop_settings").select("bank_name,card_number,card_owner").eq("id",1).maybeSingle();
-if(error){console.error("خطا در دریافت اطلاعات کارت",error);bankSettings=null;return;}
-bankSettings=data||null;
+function filterCategory(category,button) {
+  currentCategory = category;
+  document.querySelectorAll(".categories button")
+    .forEach(b => b.classList.remove("active"));
+  button.classList.add("active");
+  renderProducts();
 }
 
-async function openCheckout(){
-if(!Object.keys(cart).length){alert("سبد خرید خالی است.");return;}
-closeCart();
-el("checkoutOverlay").classList.remove("hidden");
-el("checkoutBank").textContent="در حال دریافت اطلاعات کارت بانکی...";
-await loadPublicBankSettings();
-if(bankSettings&&bankSettings.bank_name&&bankSettings.card_number&&bankSettings.card_owner){
-el("checkoutBank").innerHTML=`روش پرداخت: کارت به کارت<br>بانک: ${escapeHTML(bankSettings.bank_name)}<br>شماره کارت: <b class="bank-value">${escapeHTML(bankSettings.card_number)}</b><br>صاحب کارت: ${escapeHTML(bankSettings.card_owner)}<br><span class="small">پس از واریز، سفارش را ثبت کن تا برای هماهنگی با شما تماس گرفته شود.</span>`;
-}else{
-el("checkoutBank").textContent="روش پرداخت فعلی: کارت به کارت. اطلاعات کارت هنوز توسط مدیر فروشگاه ثبت نشده است.";
-}
+/* عملیات سبد خرید */
+function addToCart(id) {
+  const p = products.find(x => Number(x.id) === Number(id));
+  if (!p) return;
+
+  const qty = Number(cart[id] || 0);
+
+  if (qty >= Number(p.stock)) {
+    alert("تعداد انتخابی بیشتر از موجودی فروشگاه است.");
+    return;
+  }
+
+  cart[id] = qty + 1;
+  saveCart();
+  alert("محصول به سبد خرید اضافه شد.");
 }
 
-function closeCheckout(){el("checkoutOverlay").classList.add("hidden");}
+function changeQty(id,change) {
+  const p = products.find(x => Number(x.id) === Number(id));
+  if (!p) return;
 
-async function submitOrder(){
-const name=el("customerName").value.trim();
-const phone=el("customerPhone").value.trim();
-const address=el("customerAddress").value.trim();
-const message=el("checkoutMessage");
-if(!name||!phone||!address){message.textContent="لطفاً تمام اطلاعات را وارد کن.";return;}
-if(!/^09\d{9}$/.test(phone)){message.textContent="شماره موبایل باید ۱۱ رقم و با 09 شروع شود.";return;}
-const items=[];
-for(const [id,qty] of Object.entries(cart)){
-const p=products.find(x=>Number(x.id)===Number(id));
-const quantity=Number(qty);
-if(p&&Number.isInteger(quantity)&&quantity>0)items.push({id:Number(p.id),qty:quantity});
-}
-if(!items.length){message.textContent="سبد خرید معتبر نیست؛ محصولات را دوباره انتخاب کن.";return;}
-message.textContent="در حال ثبت سفارش...";
-const {data,error}=await db.rpc("place_order",{
-p_customer_name:name,
-p_customer_phone:phone,
-p_customer_address:address,
-p_items:items
-});
-if(error){console.error(error);message.textContent="ثبت سفارش انجام نشد: "+error.message;return;}
-cart={};
-saveCart();
-closeCheckout();
-alert("سفارش شما با موفقیت ثبت شد. شماره سفارش: "+data);
-await loadProducts();
+  const next = Number(cart[id] || 0) + change;
+
+  if (next <= 0) {
+    delete cart[id];
+  } else if (next > Number(p.stock)) {
+    alert("موجودی کافی نیست.");
+    return;
+  } else {
+    cart[id] = next;
+  }
+
+  saveCart();
+  renderCart();
 }
 
-function showLogin(){
-if(isAdmin){
-el("adminSection").classList.remove("hidden");
-el("adminSection").scrollIntoView({behavior:"smooth"});
-}else el("loginOverlay").classList.remove("hidden");
-}
-function hideLogin(){el("loginOverlay").classList.add("hidden");}
-
-async function loginAdmin(){
-const email=el("adminEmail").value.trim();
-const password=el("adminPassword").value;
-const message=el("loginMessage");
-if(!email||!password){message.textContent="ایمیل و رمز عبور را وارد کن.";return;}
-message.textContent="در حال بررسی...";
-const {data,error}=await db.auth.signInWithPassword({email,password});
-if(error){message.textContent="ورود ناموفق بود. ایمیل یا رمز عبور را بررسی کن.";return;}
-const {data:admin,error:adminError}=await db.from("admins").select("user_id").eq("user_id",data.user.id).maybeSingle();
-if(adminError||!admin){
-await db.auth.signOut();
-message.textContent="این حساب دسترسی مدیریت فروشگاه را ندارد.";
-return;
-}
-isAdmin=true;
-hideLogin();
-el("adminSection").classList.remove("hidden");
-el("adminSection").scrollIntoView({behavior:"smooth"});
-await loadAdminData();
+function removeCartItem(id) {
+  delete cart[id];
+  saveCart();
+  renderCart();
 }
 
-async function checkSession(){
-const {data}=await db.auth.getSession();
-if(data.session){
-const {data:admin}=await db.from("admins").select("user_id").eq("user_id",data.session.user.id).maybeSingle();
-if(admin){
-isAdmin=true;
-el("adminSection").classList.remove("hidden");
-await loadAdminData();
-}else await db.auth.signOut();
-}
+function cartTotal() {
+  return Object.entries(cart).reduce((sum,[id,qty]) => {
+    const p = products.find(x => Number(x.id) === Number(id));
+    return sum + (p ? Number(p.price) * Number(qty) : 0);
+  },0);
 }
 
-async function logoutAdmin(){
-await db.auth.signOut();
-isAdmin=false;
-el("adminSection").classList.add("hidden");
-alert("از پنل مدیریت خارج شدی.");
+function renderCart() {
+  const entries = Object.entries(cart).filter(([id,qty]) =>
+    Number(qty)>0 && products.some(p => Number(p.id)===Number(id))
+  );
+
+  if (!entries.length) {
+    el("cartItems").innerHTML =
+      '<div class="empty">سبد خرید شما خالی است.</div>';
+  } else {
+    el("cartItems").innerHTML = entries.map(([id,qty]) => {
+      const p = products.find(x => Number(x.id) === Number(id));
+
+      return `
+        <div class="order-card">
+          <strong>${escapeHTML(p.name)}</strong>
+          <p>${money(p.price)} × ${Number(qty).toLocaleString("fa-IR")}</p>
+          <div class="row-actions">
+            <button class="dark" onclick="changeQty(${Number(id)},-1)">−</button>
+            <button class="dark">${Number(qty).toLocaleString("fa-IR")}</button>
+            <button class="dark" onclick="changeQty(${Number(id)},1)">+</button>
+            <button class="red" onclick="removeCartItem(${Number(id)})">حذف</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  el("cartTotal").textContent = "مبلغ کل: " + money(cartTotal());
 }
 
-function showProductForm(p=null){
-el("productForm").classList.remove("hidden");
-el("productFormTitle").textContent=p?"ویرایش محصول":"افزودن محصول جدید";
-el("editProductId").value=p?p.id:"";
-el("pName").value=p?p.name:"";
-el("pCategory").value=p?p.category:"پوشاک";
-el("pPrice").value=p?p.price:"";
-el("pStock").value=p?p.stock:"";
-el("pImage").value=p?(p.image||""):"";
-el("pDescription").value=p?(p.description||""):"";
-el("pActive").checked=p?p.is_active:true;
-el("productForm").scrollIntoView({behavior:"smooth"});
+function openCart() {
+  renderCart();
+  el("cartOverlay").classList.remove("hidden");
 }
 
-function hideProductForm(){el("productForm").classList.add("hidden");}
+function closeCart() {
+  el("cartOverlay").classList.add("hidden");
+}
 
-function previewProductImage(){
+/* تنظیمات کارت بانکی */
+async function loadPublicBankSettings() {
+  if (!db) return;
+
+  try {
+    const {data,error} = await db.from("shop_settings")
+      .select("bank_name,card_number,card_owner")
+      .eq("id",1)
+      .maybeSingle();
+
+    if (error) throw error;
+    bankSettings = data || null;
+
+  } catch(error) {
+    console.error("خطا در دریافت کارت:",error);
+    bankSettings = null;
+  }
+}
+
+async function openCheckout() {
+  if (!Object.keys(cart).length) {
+    alert("سبد خرید خالی است.");
+    return;
+  }
+
+  closeCart();
+  el("checkoutOverlay").classList.remove("hidden");
+  el("checkoutBank").textContent = "در حال دریافت اطلاعات کارت بانکی...";
+
+  await loadPublicBankSettings();
+
+  if (bankSettings && bankSettings.bank_name &&
+      bankSettings.card_number && bankSettings.card_owner) {
+
+    el("checkoutBank").innerHTML =
+      "روش پرداخت: کارت به کارت<br>" +
+      "بانک: " + escapeHTML(bankSettings.bank_name) + "<br>" +
+      "شماره کارت: <b class='bank-value'>" +
+      escapeHTML(bankSettings.card_number) + "</b><br>" +
+      "صاحب کارت: " + escapeHTML(bankSettings.card_owner) +
+      "<br><span class='small'>پس از واریز، سفارش را ثبت کن.</span>";
+
+  } else {
+    el("checkoutBank").textContent =
+      "روش پرداخت فعلی: کارت به کارت. اطلاعات کارت هنوز ثبت نشده است.";
+  }
+}
+
+function closeCheckout() {
+  el("checkoutOverlay").classList.add("hidden");
+}
+
+/* ثبت سفارش */
+async function submitOrder() {
+  const name = el("customerName").value.trim();
+  const phone = el("customerPhone").value.trim();
+  const address = el("customerAddress").value.trim();
+  const message = el("checkoutMessage");
+
+  if (!name || !phone || !address) {
+    message.textContent = "لطفاً تمام اطلاعات را وارد کن.";
+    return;
+  }
+
+  if (!/^09\d{9}$/.test(phone)) {
+    message.textContent = "شماره موبایل باید ۱۱ رقم و با 09 شروع شود.";
+    return;
+  }
+
+  const items = [];
+
+  for (const [id,qty] of Object.entries(cart)) {
+    const p = products.find(x => Number(x.id) === Number(id));
+    const quantity = Number(qty);
+
+    if (p && Number.isInteger(quantity) && quantity > 0) {
+      items.push({id:Number(p.id),qty:quantity});
+    }
+  }
+
+  if (!items.length) {
+    message.textContent = "سبد خرید معتبر نیست.";
+    return;
+  }
+
+  message.textContent = "در حال ثبت سفارش...";
+
+  try {
+    const {data,error} = await db.rpc("place_order",{
+      p_customer_name:name,
+      p_customer_phone:phone,
+      p_customer_address:address,
+      p_items:items
+    });
+
+    if (error) throw error;
+
+    cart = {};
+    saveCart();
+    closeCheckout();
+
+    alert("سفارش شما با موفقیت ثبت شد. شماره سفارش: " + data);
+    await loadProducts();
+
+  } catch(error) {
+    console.error(error);
+    message.textContent = "ثبت سفارش انجام نشد: " + error.message;
+  }
+}
+
+/* ورود مدیر */
+function showLogin() {
+  if (isAdmin) {
+    el("adminSection").classList.remove("hidden");
+    el("adminSection").scrollIntoView({behavior:"smooth"});
+  } else {
+    el("loginOverlay").classList.remove("hidden");
+  }
+}
+
+function hideLogin() {
+  el("loginOverlay").classList.add("hidden");
+}
+
+async function loginAdmin() {
+  const email = el("adminEmail").value.trim();
+  const password = el("adminPassword").value;
+  const message = el("loginMessage");
+
+  if (!email || !password) {
+    message.textContent = "ایمیل و رمز عبور را وارد کن.";
+    return;
+  }
+
+  message.textContent = "در حال بررسی...";
+
+  try {
+    const {data,error} = await db.auth.signInWithPassword({
+      email,password
+    });
+
+    if (error) throw error;
+
+    const {data:admin,error:adminError} = await db.from("admins")
+      .select("user_id")
+      .eq("user_id",data.user.id)
+      .maybeSingle();
+
+    if (adminError || !admin) {
+      await db.auth.signOut();
+      message.textContent = "این حساب دسترسی مدیریت ندارد.";
+      return;
+    }
+
+    isAdmin = true;
+    hideLogin();
+    el("adminSection").classList.remove("hidden");
+    el("adminSection").scrollIntoView({behavior:"smooth"});
+    await loadAdminData();
+
+  } catch(error) {
+    message.textContent = "ورود ناموفق بود: " + error.message;
+  }
+}
+
+async function checkSession() {
+  if (!db) return;
+
+  try {
+    const {data} = await db.auth.getSession();
+
+    if (data.session) {
+      const {data:admin} = await db.from("admins")
+        .select("user_id")
+        .eq("user_id",data.session.user.id)
+        .maybeSingle();
+
+      if (admin) {
+        isAdmin = true;
+        el("adminSection").classList.remove("hidden");
+        await loadAdminData();
+      } else {
+        await db.auth.signOut();
+      }
+    }
+  } catch(error) {
+    console.error("خطای بررسی ورود:",error);
+  }
+}
+
+async function logoutAdmin() {
+  await db.auth.signOut();
+  isAdmin = false;
+  el("adminSection").classList.add("hidden");
+  alert("از پنل مدیریت خارج شدی.");
+}
+
+/* فرم محصول و عکس گالری */
+function showProductForm(p=null) {
+  el("productForm").classList.remove("hidden");
+  el("productFormTitle").textContent =
+    p ? "ویرایش محصول" : "افزودن محصول جدید";
+
+  el("editProductId").value = p ? p.id : "";
+  el("pName").value = p ? p.name : "";
+  el("pCategory").value = p ? p.category : "پوشاک";
+  el("pPrice").value = p ? p.price : "";
+  el("pStock").value = p ? p.stock : "";
+  el("pImage").value = p ? (p.image || "") : "";
+  el("pDescription").value = p ? (p.description || "") : "";
+  el("pActive").checked = p ? p.is_active : true;
+
+  el("pImageFile").value = "";
+
+  if (p && p.image) {
+    el("pImagePreview").src = p.image;
+    el("pImagePreview").classList.remove("hidden");
+  } else {
+    el("pImagePreview").src = "";
+    el("pImagePreview").classList.add("hidden");
+  }
+
+  el("productForm").scrollIntoView({behavior:"smooth"});
+}
+
+function hideProductForm() {
+  el("productForm").classList.add("hidden");
+}
+
+function previewProductImage() {
   const file = el("pImageFile").files[0];
   const preview = el("pImagePreview");
 
-  if(!file){
+  if (!file) {
     preview.src = "";
     preview.classList.add("hidden");
     return;
   }
 
-  if(!file.type.startsWith("image/")){
+  if (!file.type.startsWith("image/")) {
     alert("لطفاً یک فایل تصویری انتخاب کن.");
     el("pImageFile").value = "";
     return;
@@ -518,64 +835,64 @@ function previewProductImage(){
   preview.classList.remove("hidden");
 }
 
-async function saveProduct(){
-  if(!isAdmin)return;
+async function saveProduct() {
+  if (!isAdmin) return;
 
-  const id=el("editProductId") }
-  async function deleteProduct(id){
-  const category=el("pCategory").value;
-  const price=Number(el("pPrice").value);
-  const stock=Number(el("pStock").value);
-  let image=el("pImage").value.trim();
-  const description=el("pDescription").value.trim();
-  const is_active=el("pActive").checked;
+  const id = el("editProductId").value;
+  const name = el("pName").value.trim();
+  const category = el("pCategory").value;
+  const price = Number(el("pPrice").value);
+  const stock = Number(el("pStock").value);
+  let image = el("pImage").value.trim();
+  const description = el("pDescription").value.trim();
+  const is_active = el("pActive").checked;
+  const file = el("pImageFile").files[0];
 
-  const file=el("pImageFile").files[0];
-
-  if(!name||!Number.isInteger(price)||price<=0||!Number.isInteger(stock)||stock<0){
+  if (!name || !Number.isInteger(price) || price <= 0 ||
+      !Number.isInteger(stock) || stock < 0) {
     alert("نام، قیمت معتبر و موجودی معتبر را وارد کن.");
     return;
   }
 
-  if(file){
-    if(!file.type.startsWith("image/")){
+  if (file) {
+    if (!file.type.startsWith("image/")) {
       alert("فایل انتخابی باید تصویر باشد.");
       return;
     }
 
-    if(file.size>5*1024*1024){
+    if (file.size > 5 * 1024 * 1024) {
       alert("حجم عکس نباید بیشتر از ۵ مگابایت باشد.");
       return;
     }
 
-    const extension=file.name.split(".").pop().toLowerCase();
-    const fileName=Date.now()+"-"+Math.random().toString(36).slice(2)+"."+extension;
+    try {
+      const extension = file.name.split(".").pop().toLowerCase();
+      const fileName =
+        Date.now() + "-" +
+        Math.random().toString(36).slice(2) + "." + extension;
 
-    const {data:uploadData,error:uploadError}=await db.storage
-      .from("product-images")
-      .upload(fileName,file,{
-        contentType:file.type,
-        upsert:false
-      });
+      const {data:uploadData,error:uploadError} = await db.storage
+        .from("product-images")
+        .upload(fileName,file,{
+          contentType:file.type,
+          upsert:false
+        });
 
-    if(uploadError){
-      alert("آپلود عکس ناموفق بود: "+uploadError.message);
+      if (uploadError) throw uploadError;
+
+      const {data:urlData} = db.storage
+        .from("product-images")
+        .getPublicUrl(uploadData.path);
+
+      image = urlData.publicUrl;
+
+    } catch(error) {
+      alert("آپلود عکس ناموفق بود: " + error.message);
       return;
     }
-
-    const {data:urlData}=db.storage
-      .from("product-images")
-      .getPublicUrl(uploadData.path);
-
-    image=urlData.publicUrl;
   }
 
-  if(image&&!/^https?:\/\//i.test(image)){
-    alert("آدرس تصویر معتبر نیست.");
-    return;
-  }
-
-  const record={
+  const record = {
     name,
     category,
     price,
@@ -585,188 +902,243 @@ async function saveProduct(){
     is_active
   };
 
-  const result=id
-    ?await db.from("products").update(record).eq("id",id)
-    :await db.from("products").insert(record);
+  try {
+    const result = id
+      ? await db.from("products").update(record).eq("id",id)
+      : await db.from("products").insert(record);
 
-  if(result.error){
-    alert("ذخیره محصول انجام نشد: "+result.error.message);
+    if (result.error) throw result.error;
+
+    alert("محصول با موفقیت ذخیره شد.");
+    hideProductForm();
+    await loadAdminData();
+    await loadProducts();
+
+  } catch(error) {
+    alert("ذخیره محصول انجام نشد: " + error.message);
+  }
+}
+
+async function deleteProduct(id) {
+  if (!isAdmin || !confirm("آیا از حذف این محصول مطمئنی؟")) return;
+
+  const {error} = await db.from("products").delete().eq("id",id);
+
+  if (error) {
+    alert("حذف انجام نشد: " + error.message);
     return;
   }
 
-  alert("محصول با موفقیت ذخیره شد.");
-  hideProductForm();
+  alert("محصول حذف شد.");
   await loadAdminData();
   await loadProducts();
-}.value;
-const name=el("pName").value.trim();
-const category=el("pCategory").value;
-const price=Number(el("pPrice").value);
-const stock=Number(el("pStock").value);
-const image=el("pImage").value.trim();
-const description=el("pDescription").value.trim();
-const is_active=el("pActive").checked;
-if(!name||!Number.isInteger(price)||price<=0||!Number.isInteger(stock)||stock<0){
-alert("نام، قیمت معتبر و موجودی معتبر را وارد کن.");return;
-}
-if(image&&!/^https?:\/\//i.test(image)){
-alert("لینک تصویر باید با https:// یا http:// شروع شود.");return;
-}
-const record={name,category,price,stock,image,description,is_active};
-const result=id?await db.from("products").update(record).eq("id",id):await db.from("products").insert(record);
-if(result.error){alert("ذخیره محصول انجام نشد: "+result.error.message);return;}
-alert("محصول با موفقیت ذخیره شد.");
-hideProductForm();
-await loadAdminData();
-await loadProducts();
 }
 
-async function deleteProduct(id){
-if(!isAdmin||!confirm("آیا از حذف این محصول مطمئنی؟"))return;
-const {error}=await db.from("products").delete().eq("id",id);
-if(error){alert("حذف انجام نشد: "+error.message);return;}
-alert("محصول حذف شد.");
-await loadAdminData();
-await loadProducts();
+/* تنظیمات کارت مدیر */
+async function loadBankSettings() {
+  if (!isAdmin) return;
+
+  const {data,error} = await db.from("shop_settings")
+    .select("*")
+    .eq("id",1)
+    .maybeSingle();
+
+  if (error) {
+    el("bankMessage").textContent =
+      "دریافت تنظیمات کارت انجام نشد: " + error.message;
+    return;
+  }
+
+  if (data) {
+    el("bankName").value = data.bank_name || "";
+    el("cardNumber").value = data.card_number || "";
+    el("cardOwner").value = data.card_owner || "";
+  }
 }
 
-async function loadBankSettings(){
-if(!isAdmin)return;
-const {data,error}=await db.from("shop_settings").select("*").eq("id",1).maybeSingle();
-if(error){console.error(error);el("bankMessage").textContent="دریافت تنظیمات کارت انجام نشد: "+error.message;return;}
-if(data){
-el("bankName").value=data.bank_name||"";
-el("cardNumber").value=data.card_number||"";
-el("cardOwner").value=data.card_owner||"";
-}
+async function saveBankSettings() {
+  if (!isAdmin) return;
+
+  const bank = el("bankName").value.trim();
+  const card = el("cardNumber").value.replace(/[\s-]/g,"");
+  const owner = el("cardOwner").value.trim();
+  const message = el("bankMessage");
+
+  if (!bank || !owner || !/^\d{16}$/.test(card)) {
+    message.textContent =
+      "نام بانک، نام صاحب کارت و شماره کارت ۱۶ رقمی را درست وارد کن.";
+    return;
+  }
+
+  const {error} = await db.from("shop_settings").upsert({
+    id:1,
+    bank_name:bank,
+    card_number:card,
+    card_owner:owner,
+    updated_at:new Date().toISOString()
+  },{onConflict:"id"});
+
+  if (error) {
+    message.textContent = "ذخیره انجام نشد: " + error.message;
+    return;
+  }
+
+  message.textContent = "اطلاعات کارت بانکی با موفقیت ذخیره شد.";
 }
 
-async function saveBankSettings(){
-if(!isAdmin)return;
-const bank=el("bankName").value.trim();
-const card=el("cardNumber").value.replace(/[\s-]/g,"");
-const owner=el("cardOwner").value.trim();
-const message=el("bankMessage");
-if(!bank||!owner||!/^\d{16}$/.test(card)){
-message.textContent="نام بانک، نام صاحب کارت و شماره کارت ۱۶ رقمی را درست وارد کن.";
-return;
-}
-const {error}=await db.from("shop_settings").upsert({
-id:1,
-bank_name:bank,
-card_number:card,
-card_owner:owner,
-updated_at:new Date().toISOString()
-},{onConflict:"id"});
-if(error){message.textContent="ذخیره انجام نشد: "+error.message;return;}
-message.textContent="اطلاعات کارت بانکی با موفقیت ذخیره شد.";
+/* مدیریت سفارش‌ها و محصولات */
+async function loadAdminData() {
+  if (!isAdmin) return;
+
+  const {data:allProducts,error:pError} = await db.from("products")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+  if (pError) {
+    el("adminProducts").innerHTML =
+      "<tr><td colspan='5'>خطا: " +
+      escapeHTML(pError.message) + "</td></tr>";
+  } else {
+    window.adminProductCache = allProducts || [];
+
+    el("adminProducts").innerHTML =
+      window.adminProductCache.length
+      ? window.adminProductCache.map(p => `
+        <tr>
+          <td>${escapeHTML(p.name)}</td>
+          <td>${money(p.price)}</td>
+          <td>${Number(p.stock).toLocaleString("fa-IR")}</td>
+          <td>${p.is_active ? "فعال" : "غیرفعال"}</td>
+          <td>
+            <div class="row-actions">
+              <button class="gold" onclick="editProduct(${Number(p.id)})">ویرایش</button>
+              <button class="red" onclick="deleteProduct(${Number(p.id)})">حذف</button>
+            </div>
+          </td>
+        </tr>
+      `).join("")
+      : "<tr><td colspan='5'>هنوز محصولی اضافه نکرده‌ای.</td></tr>";
+  }
+
+  const {data:orders,error:oError} = await db.from("orders")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+  const box = el("adminOrders");
+
+  if (oError) {
+    box.textContent = "خطا در دریافت سفارش‌ها: " + oError.message;
+    return;
+  }
+
+  if (!orders || !orders.length) {
+    box.innerHTML = '<div class="empty">هنوز سفارشی ثبت نشده است.</div>';
+  } else {
+    box.innerHTML = orders.map(o => {
+      const items = Array.isArray(o.items) ? o.items : [];
+      const itemsText = items.map(i =>
+        escapeHTML(i.name || "محصول") + " × " +
+        Number(i.qty || i.quantity || 1).toLocaleString("fa-IR")
+      ).join("، ");
+
+      const date = o.created_at
+        ? new Date(o.created_at).toLocaleString("fa-IR")
+        : "-";
+
+      return `
+        <div class="order-card">
+          <h3>سفارش شماره ${escapeHTML(o.id)}</h3>
+          <p>
+            مشتری: ${escapeHTML(o.customer_name)}<br>
+            موبایل: ${escapeHTML(o.customer_phone)}<br>
+            آدرس: ${escapeHTML(o.customer_address)}<br>
+            محصولات: ${itemsText}<br>
+            مبلغ: ${money(o.total_price)}<br>
+            تاریخ: ${escapeHTML(date)}
+          </p>
+
+          <label>وضعیت سفارش</label>
+          <select id="orderStatus${Number(o.id)}">
+            <option value="new" ${o.order_status==="new"?"selected":""}>جدید</option>
+            <option value="processing" ${o.order_status==="processing"?"selected":""}>در حال آماده‌سازی</option>
+            <option value="shipped" ${o.order_status==="shipped"?"selected":""}>ارسال شده</option>
+            <option value="delivered" ${o.order_status==="delivered"?"selected":""}>تحویل شده</option>
+            <option value="cancelled" ${o.order_status==="cancelled"?"selected":""}>لغو شده</option>
+          </select>
+
+          <label>وضعیت پرداخت</label>
+          <select id="paymentStatus${Number(o.id)}">
+            <option value="pending" ${o.payment_status==="pending"?"selected":""}>در انتظار پرداخت</option>
+            <option value="paid" ${o.payment_status==="paid"?"selected":""}>پرداخت شده</option>
+            <option value="rejected" ${o.payment_status==="rejected"?"selected":""}>پرداخت رد شده</option>
+          </select>
+
+          <button class="gold" onclick="updateOrder(${Number(o.id)})">
+            ذخیره تغییرات سفارش
+          </button>
+        </div>
+      `;
+    }).join("");
+  }
+
+  await loadBankSettings();
 }
 
-async function loadAdminData(){
-if(!isAdmin)return;
-const {data:allProducts,error:pError}=await db.from("products").select("*").order("created_at",{ascending:false});
-if(pError){
-el("adminProducts").innerHTML="<tr><td colspan='5'>خطا در دریافت محصولات: "+escapeHTML(pError.message)+"</td></tr>";
-}else{
-window.adminProductCache=allProducts||[];
-el("adminProducts").innerHTML=window.adminProductCache.length?
-window.adminProductCache.map(p=>`
-<tr>
-<td>${escapeHTML(p.name)}</td>
-<td>${money(p.price)}</td>
-<td>${Number(p.stock).toLocaleString("fa-IR")}</td>
-<td>${p.is_active?"فعال":"غیرفعال"}</td>
-<td><div class="row-actions">
-<button class="gold" onclick="editProduct(${Number(p.id)})">ویرایش</button>
-<button class="red" onclick="deleteProduct(${Number(p.id)})">حذف</button>
-</div></td>
-</tr>`).join(""):"<tr><td colspan='5'>هنوز محصولی اضافه نکرده‌ای.</td></tr>";
-}
-const {data:orders,error:oError}=await db.from("orders").select("*").order("created_at",{ascending:false});
-const box=el("adminOrders");
-if(oError){box.textContent="خطا در دریافت سفارش‌ها: "+oError.message;return;}
-if(!orders||!orders.length){
-box.innerHTML='<div class="empty">هنوز سفارشی ثبت نشده است.</div>';
-}else{
-box.innerHTML=orders.map(o=>{
-const items=Array.isArray(o.items)?o.items:[];
-const itemsText=items.map(i=>escapeHTML(i.name||"محصول")+" × "+Number(i.qty||i.quantity||1).toLocaleString("fa-IR")).join("، ");
-const date=o.created_at?new Date(o.created_at).toLocaleString("fa-IR"):"-";
-return `<div class="order-card">
-<h3>سفارش شماره ${escapeHTML(o.id)}</h3>
-<p>
-مشتری: ${escapeHTML(o.customer_name)}<br>
-موبایل: ${escapeHTML(o.customer_phone)}<br>
-آدرس: ${escapeHTML(o.customer_address)}<br>
-محصولات: ${itemsText}<br>
-مبلغ: ${money(o.total_price)}<br>
-تاریخ: ${escapeHTML(date)}
-</p>
-<label>وضعیت سفارش</label>
-<select id="orderStatus${Number(o.id)}">
-<option value="new" ${o.order_status==="new"?"selected":""}>جدید</option>
-<option value="processing" ${o.order_status==="processing"?"selected":""}>در حال آماده‌سازی</option>
-<option value="shipped" ${o.order_status==="shipped"?"selected":""}>ارسال شده</option>
-<option value="delivered" ${o.order_status==="delivered"?"selected":""}>تحویل شده</option>
-<option value="cancelled" ${o.order_status==="cancelled"?"selected":""}>لغو شده</option>
-</select>
-<label>وضعیت پرداخت</label>
-<select id="paymentStatus${Number(o.id)}">
-<option value="pending" ${o.payment_status==="pending"?"selected":""}>در انتظار پرداخت</option>
-<option value="paid" ${o.payment_status==="paid"?"selected":""}>پرداخت شده</option>
-<option value="rejected" ${o.payment_status==="rejected"?"selected":""}>پرداخت رد شده</option>
-</select>
-<button class="gold" onclick="updateOrder(${Number(o.id)})">ذخیره تغییرات سفارش</button>
-</div>`;
-}).join("");
-}
-await loadBankSettings();
+function editProduct(id) {
+  const p = window.adminProductCache?.find(
+    x => Number(x.id) === Number(id)
+  );
+  if (p) showProductForm(p);
 }
 
-function editProduct(id){
-const p=window.adminProductCache?.find(x=>Number(x.id)===Number(id));
-if(p)showProductForm(p);
+async function updateOrder(id) {
+  if (!isAdmin) return;
+
+  const order_status = el("orderStatus"+id).value;
+  const payment_status = el("paymentStatus"+id).value;
+
+  const {error} = await db.from("orders")
+    .update({order_status,payment_status})
+    .eq("id",id);
+
+  if (error) {
+    alert("تغییر سفارش ذخیره نشد: " + error.message);
+    return;
+  }
+
+  alert("وضعیت سفارش به‌روزرسانی شد.");
+  await loadAdminData();
 }
 
-async function updateOrder(id){
-if(!isAdmin)return;
-const order_status=el("orderStatus"+id).value;
-const payment_status=el("paymentStatus"+id).value;
-const {error}=await db.from("orders").update({order_status,payment_status}).eq("id",id);
-if(error){alert("تغییر سفارش ذخیره نشد: "+error.message);return;}
-alert("وضعیت سفارش به‌روزرسانی شد.");
-await loadAdminData();
+/* شروع سایت */
+function goHome() {
+  el("home").scrollIntoView({behavior:"smooth"});
 }
 
-function goHome(){el("home").scrollIntoView({behavior:"smooth"});}
+async function startSite() {
+  updateCartCount();
 
-async function startSite(){
-updateCartCount();
-await loadProducts();
-await loadPublicBankSettings();
-await checkSession();
+  try {
+    if (!window.supabase || !window.supabase.createClient) {
+      throw new Error("کتابخانه اتصال به فروشگاه بارگذاری نشده است.");
+    }
+
+    db = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+    await loadProducts();
+    await loadPublicBankSettings();
+    await checkSession();
+
+  } catch(error) {
+    console.error("خطای شروع سایت:",error);
+    el("products").innerHTML =
+      '<div class="empty">خطا در راه‌اندازی فروشگاه: ' +
+      escapeHTML(error.message) + '</div>';
+  }
 }
+
 startSite();
 </script>
-<!-- ارتباط با ما -->
-<section style="background:#111;color:#fff;padding:30px 15px;text-align:center;border-top:2px solid #d4af37;direction:rtl;">
-  <h2 style="color:#d4af37;">ارتباط با امیر آنلاین شاپ</h2>
-  <p>برای ثبت سفارش و دریافت راهنمایی با ما در ارتباط باشید.</p>
 
-  <a href="tel:09118479380"
-     style="display:inline-block;background:#d4af37;color:#111;padding:12px 25px;margin:8px;border-radius:8px;text-decoration:none;font-weight:bold;">
-    تماس با ما
-  </a>
-
-  <a href="https://t.me/Usertelegram_es"
-     target="_blank"
-     style="display:inline-block;background:#d4af37;color:#111;padding:12px 25px;margin:8px;border-radius:8px;text-decoration:none;font-weight:bold;">
-    ارتباط در تلگرام
-  </a>
-
-  <p style="margin-top:20px;font-size:13px;color:#bbb;">
-    © امیر آنلاین شاپ | تمامی حقوق محفوظ است
-  </p>
-</section>
 </body>
 </html>
